@@ -34,14 +34,14 @@ if not os.path.exists("./Settings.json"):
         open("./Settings.json", "w", encoding="UTF-8")
     )
 
-# 加载Settings.json文件中的配置
-Settings = json.load(open("./Settings.json", "r", encoding="UTF-8"))
 try:
+    # 加载Settings.json文件中的配置
+    Settings = json.load(open("./Settings.json", "r", encoding="UTF-8"))
     # 获取文件目录设置
     PATH = Settings["FolderPath"]
     # 获取切换时长设置
     SLEEP = Settings["Sleep"]
-except KeyError:
+except (KeyError, json.decoder.JSONDecodeError):
     # 若无此设置，则弹出错误警告并重新创建文件
     DisplayErrorMessage(f"文件'{WorkPath}/Settings.json'已损坏。")
     json.dump(
@@ -92,14 +92,14 @@ def ProbeSetting():
         ThisTime = GetTimeInfo("./Settings.json")
         if ThisTime is not None:
             if ThisTime != LastModificationTime:
-                Settings = json.load(open("./Settings.json", "r", encoding="UTF-8"))
                 LOCK.acquire()
                 try:
+                    Settings = json.load(open("./Settings.json", "r", encoding="UTF-8"))
                     # 获取文件目录设置
                     PATH = Settings["FolderPath"]
                     # 获取切换时长设置
                     SLEEP = Settings["Sleep"]
-                except KeyError:
+                except (KeyError, json.decoder.JSONDecodeError):
                     # 若无此设置，则弹出错误警告并重新创建文件
                     DisplayErrorMessage(f"文件'{WorkPath}/Settings.json'已损坏。")
                     json.dump(
